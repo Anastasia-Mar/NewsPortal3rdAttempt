@@ -3,6 +3,7 @@ from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
 class PostList(ListView):
@@ -29,10 +30,11 @@ class PostDetail(DetailView):
     context_object_name = 'new'
 
 
-class PostCreate(CreateView):
+class PostCreate(CreateView, PermissionRequiredMixin, LoginRequiredMixin):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+    permission_required = 'news.add_post'
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -40,10 +42,11 @@ class PostCreate(CreateView):
         return super().form_valid(form)
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(UpdateView, PermissionRequiredMixin, LoginRequiredMixin):
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+    permission_required = 'news.change_post'
 
 
 class PostDelete(DeleteView):
